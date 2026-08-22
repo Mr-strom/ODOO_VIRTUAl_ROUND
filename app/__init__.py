@@ -1,5 +1,5 @@
 # app/__init__.py — Flask application factory
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_cors import CORS
@@ -9,11 +9,7 @@ migrate = Migrate()
 
 
 def create_app():
-    app = Flask(
-        __name__,
-        template_folder='../templates',
-        static_folder='../static'
-    )
+    app = Flask(__name__)
 
     # Load config
     from .config import Config
@@ -22,7 +18,10 @@ def create_app():
     # Init extensions
     db.init_app(app)
     migrate.init_app(app, db)
-    CORS(app)
+
+    # Configure CORS with explicit allowed origins
+    cors_origins = app.config.get('CORS_ORIGINS', ['http://localhost:3000', 'http://127.0.0.1:3000'])
+    CORS(app, origins=cors_origins, supports_credentials=True, allow_headers=['Content-Type', 'Authorization'])
 
     # Import models so Flask-Migrate picks them up
     from . import models  # noqa
@@ -44,10 +43,25 @@ def create_app():
     app.register_blueprint(payroll_bp, url_prefix='/api/payroll')
     app.register_blueprint(analytics_bp, url_prefix='/api/analytics')
 
-    # Serve frontend
+    # API Root metadata endpoint (pure REST API)
     @app.route('/')
     def index():
-        return render_template('index.html')
+        return jsonify({
+            'name': 'Dayflow HRMS REST API',
+            'version': '1.0.0',
+            'status': 'healthy',
+            'endpoints': {
+                'health': '/api/health',
+                'auth': '/api/auth',
+                'dashboard': '/api/dashboard',
+                'profile': '/api/profile',
+                'attendance': '/api/attendance',
+                'leaves': '/api/leaves',
+                'payroll': '/api/payroll',
+                'analytics': '/api/analytics'
+            },
+            'architecture': 'Decoupled API (React static SPA frontend)'
+        }), 200
 
     # Health check
     @app.route('/api/health')
@@ -57,7 +71,7 @@ def create_app():
     # Global JSON error handlers
     @app.errorhandler(404)
     def not_found(e):
-        return jsonify({'error': 'Not found'}), 404
+        return jsonify({'error': 'Resource not found'}), 404
 
     @app.errorhandler(405)
     def method_not_allowed(e):

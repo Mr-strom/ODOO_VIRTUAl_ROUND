@@ -30,6 +30,10 @@ def signup():
     if role not in VALID_ROLES:
         return jsonify({'error': 'role must be "employee" or "hr"'}), 400
 
+    # HR accounts are seeded via seed_data.py — public registration is blocked
+    if role == 'hr':
+        return jsonify({'error': 'HR accounts require admin approval'}), 403
+
     # Check for duplicate
     if User.query.filter_by(email=email).first():
         return jsonify({'error': 'Email already registered'}), 400

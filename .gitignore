@@ -12,6 +12,13 @@ env/
 
 # Environment variables
 .env
+.env.*
+!.env.example
+
+# Node / Frontend
+node_modules/
+dist/
+.manus-logs/
 
 # Flask / SQLAlchemy
 instance/

@@ -15,9 +15,10 @@ EMPLOYEE_EDITABLE_FIELDS = {'phone', 'address', 'profile_picture'}
 def get_own_profile():
     """GET /api/profile — Return current user's own profile."""
     user = g.current_user
-    result = user.to_dict()
-    result['profile'] = user.profile.to_dict() if user.profile else None
-    return jsonify(result), 200
+    profile = user.profile
+    if not profile:
+        return jsonify({'error': 'Profile not found'}), 404
+    return jsonify(profile.to_dict()), 200
 
 
 @profile_bp.route('/profile', methods=['PUT'])
@@ -25,8 +26,6 @@ def get_own_profile():
 def update_own_profile():
     """PUT /api/profile — Employee can only update phone, address, profile_picture."""
     user = g.current_user
-    if user.role != 'employee':
-        return jsonify({'error': 'Forbidden'}), 403
 
     data = request.get_json(silent=True)
     if not data:
@@ -35,7 +34,7 @@ def update_own_profile():
     # Reject any keys that aren't in the allowed set
     disallowed = set(data.keys()) - EMPLOYEE_EDITABLE_FIELDS
     if disallowed:
-        return jsonify({'error': f'Fields not allowed for employee update: {list(disallowed)}'}), 400
+        return jsonify({'error': f'Cannot update fields: {", ".join(sorted(disallowed))}'}), 400
 
     profile = user.profile
     if not profile:
@@ -53,14 +52,19 @@ def update_own_profile():
 @profile_bp.route('/profiles', methods=['GET'])
 @hr_required
 def get_all_profiles():
-    """GET /api/profiles — HR only: return all employee profiles with user data."""
-    users = User.query.all()
+    """GET /api/profiles — HR only: return all profiles with nested user object."""
+    profiles = Profile.query.all()
     result = []
-    for u in users:
-        user_data = u.to_dict()
-        user_data['profile'] = u.profile.to_dict() if u.profile else None
-        result.append(user_data)
-    return jsonify(result), 200
+    for p in profiles:
+        data = p.to_dict()
+        user = User.query.get(p.user_id)
+        data['user'] = {
+            'id': user.id,
+            'employee_id': user.employee_id,
+            'email': user.email
+        } if user else None
+        result.append(data)
+    return jsonify({'profiles': result}), 200
 
 
 @profile_bp.route('/profiles/<int:user_id>', methods=['PUT'])
@@ -86,11 +90,9 @@ def update_profile_by_hr(user_id):
 
     for field in allowed_fields:
         if field in data:
-            # Convert joining_date string to Python date
             if field == 'joining_date' and data[field]:
-                from datetime import date
+                from datetime import datetime
                 try:
-                    from datetime import datetime
                     setattr(profile, field, datetime.strptime(data[field], '%Y-%m-%d').date())
                 except ValueError:
                     return jsonify({'error': 'joining_date must be YYYY-MM-DD'}), 400

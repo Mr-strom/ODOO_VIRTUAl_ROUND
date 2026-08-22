@@ -13,9 +13,6 @@ payroll_bp = Blueprint('payroll', __name__)
 def my_payroll():
     """GET /api/payroll/my — Employee reads their own payroll. net_salary is computed."""
     user = g.current_user
-    if user.role != 'employee':
-        return jsonify({'error': 'Forbidden'}), 403
-
     payroll = user.payroll
     if not payroll:
         return jsonify({'error': 'Payroll record not found'}), 404
@@ -26,39 +23,49 @@ def my_payroll():
 @payroll_bp.route('/all', methods=['GET'])
 @hr_required
 def all_payroll():
-    """GET /api/payroll/all — HR only: all payroll records with employee info + net_salary."""
+    """GET /api/payroll/all — HR only: all payroll records with nested user object."""
     payrolls = Payroll.query.all()
     result = []
     for p in payrolls:
         data = p.to_dict()
         user = User.query.get(p.user_id)
+        data['user'] = {
+            'id': user.id,
+            'employee_id': user.employee_id,
+            'email': user.email
+        } if user else None
+        # Also include employee info for backwards compat
         if user:
             data['employee'] = {
                 'id': user.id,
                 'employee_id': user.employee_id,
                 'email': user.email,
-                'role': user.role
+                'role': user.role,
+                'full_name': user.profile.full_name if user.profile else None,
+                'department': user.profile.department if user.profile else None
             }
-            if user.profile:
-                data['employee']['full_name'] = user.profile.full_name
-                data['employee']['department'] = user.profile.department
         result.append(data)
-    return jsonify(result), 200
+    return jsonify({'payrolls': result}), 200
 
 
-@payroll_bp.route('/<int:payroll_id>', methods=['PUT'])
+@payroll_bp.route('/<int:user_id>', methods=['PUT'])
 @hr_required
-def update_payroll(payroll_id):
-    """PUT /api/payroll/<id> — HR only: update basic_salary, hra, deductions."""
+def update_payroll(user_id):
+    """PUT /api/payroll/<user_id> — HR only: update salary. Uses user_id NOT payroll record id."""
     data = request.get_json(silent=True)
     if not data:
         return jsonify({'error': 'Invalid JSON'}), 400
 
-    payroll = Payroll.query.get(payroll_id)
-    if not payroll:
-        return jsonify({'error': 'Payroll record not found'}), 404
+    payroll = Payroll.query.filter_by(user_id=user_id).first()
 
-    # Update only provided fields
+    # Upsert — create if doesn't exist
+    if not payroll:
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        payroll = Payroll(user_id=user_id, basic_salary=0)
+        db.session.add(payroll)
+
     if 'basic_salary' in data:
         try:
             payroll.basic_salary = float(data['basic_salary'])

@@ -1,4 +1,4 @@
-﻿# seed_data.py â€” Demo data seeder for Dayflow HRMS
+# seed_data.py â€” Demo data seeder for Dayflow HRMS
 # Usage:
 #   python seed_data.py          -> inserts if tables are empty
 #   python seed_data.py --clear  -> clears all existing data first
@@ -79,17 +79,18 @@ LEAVES = [
 
 
 # â”€â”€â”€ Seeder â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ———————————————————————————————————————————————————————————————————————————————————————————————————
 
 def seed(clear=False):
     app = create_app()
     with app.app_context():
         if clear:
             print("Clearing existing data...")
-            db.session.execute(db.text("TRUNCATE users CASCADE;"))
-            db.session.commit()
-            print("  âœ“ Tables cleared")
+            db.drop_all()
+            db.create_all()
+            print("  Tables cleared")
 
-        # â”€â”€ Users â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        # ————————————————————————————————————————————————————————————————————————————————————
         user_map = {}  # employee_id -> User object
         created_users = 0
         for emp_id, email, password, role in USERS:

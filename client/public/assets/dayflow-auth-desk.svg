@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1200" width="100%" height="100%" fill="none">
+  <!-- Background gradient / paper atmosphere -->
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#142b27"/>
+      <stop offset="40%" stop-color="#0f221f"/>
+      <stop offset="100%" stop-color="#091715"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0b6e69" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#e76f51" stop-opacity="0.3"/>
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#25433e" stroke-width="0.75" stroke-opacity="0.4"/>
+    </pattern>
+    <pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1" fill="#446a63" fill-opacity="0.3"/>
+    </pattern>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="1000" height="1200" fill="url(#bg)"/>
+  <rect width="1000" height="1200" fill="url(#grid)"/>
+
+  <!-- Architectural Ledger / Grid Structure -->
+  <g opacity="0.85">
+    <!-- Main Ledger Card Layout Silhouette -->
+    <rect x="140" y="240" width="720" height="720" rx="16" fill="#1b3632" stroke="#2a504a" stroke-width="1.5"/>
+    <rect x="140" y="240" width="720" height="720" fill="url(#dots)"/>
+    
+    <!-- Ledger Top Bar -->
+    <rect x="140" y="240" width="720" height="64" rx="16" fill="#152b27"/>
+    <line x1="140" y1="304" x2="860" y2="304" stroke="#2a504a" stroke-width="1.5"/>
+    
+    <!-- Decorative Column Rules -->
+    <line x1="360" y1="304" x2="360" y2="960" stroke="#22423d" stroke-width="1" stroke-dasharray="4 4"/>
+    <line x1="580" y1="304" x2="580" y2="960" stroke="#22423d" stroke-width="1" stroke-dasharray="4 4"/>
+    <line x1="720" y1="304" x2="720" y2="960" stroke="#22423d" stroke-width="1"/>
+
+    <!-- Desk Elements: Floating Cards / Geometry -->
+    <!-- Card 1: Attendance punch meter -->
+    <g transform="translate(180, 350)">
+      <rect width="360" height="130" rx="12" fill="#203f3a" stroke="#2f5c54" stroke-width="1"/>
+      <rect x="18" y="20" width="4" height="48" rx="2" fill="#e76f51"/>
+      <rect x="34" y="22" width="120" height="12" rx="4" fill="#698e87"/>
+      <rect x="34" y="44" width="200" height="18" rx="4" fill="#f7f4ed"/>
+      <circle cx="310" cy="45" r="22" fill="#0b6e69"/>
+      <path d="M304 45 L309 50 L318 39" stroke="#f7f4ed" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="18" y="86" width="324" height="24" rx="6" fill="#172e2a"/>
+      <rect x="22" y="90" width="180" height="16" rx="4" fill="#0b6e69"/>
+    </g>
+
+    <!-- Card 2: Operations Ledger Lines -->
+    <g transform="translate(180, 520)">
+      <rect width="500" height="210" rx="12" fill="#1b3632" stroke="#2a504a" stroke-width="1"/>
+      <!-- Row 1 -->
+      <circle cx="40" cy="40" r="14" fill="#e76f51" fill-opacity="0.3"/>
+      <circle cx="40" cy="40" r="6" fill="#e76f51"/>
+      <rect x="70" y="32" width="140" height="10" rx="3" fill="#f7f4ed"/>
+      <rect x="70" y="48" width="80" height="8" rx="2" fill="#5a7d76"/>
+      <rect x="360" y="34" width="100" height="22" rx="11" fill="#29544c"/>
+      <line x1="20" y1="75" x2="480" y2="75" stroke="#254741" stroke-width="1"/>
+
+      <!-- Row 2 -->
+      <circle cx="40" cy="110" r="14" fill="#0b6e69" fill-opacity="0.3"/>
+      <circle cx="40" cy="110" r="6" fill="#0b6e69"/>
+      <rect x="70" y="102" width="160" height="10" rx="3" fill="#f7f4ed"/>
+      <rect x="70" y="118" width="100" height="8" rx="2" fill="#5a7d76"/>
+      <rect x="360" y="104" width="100" height="22" rx="11" fill="#29544c"/>
+      <line x1="20" y1="145" x2="480" y2="145" stroke="#254741" stroke-width="1"/>
+
+      <!-- Row 3 -->
+      <circle cx="40" cy="175" r="14" fill="#c98a31" fill-opacity="0.3"/>
+      <circle cx="40" cy="175" r="6" fill="#c98a31"/>
+      <rect x="70" y="167" width="130" height="10" rx="3" fill="#f7f4ed"/>
+      <rect x="70" y="183" width="70" height="8" rx="2" fill="#5a7d76"/>
+      <rect x="360" y="169" width="100" height="22" rx="11" fill="#29544c"/>
+    </g>
+
+    <!-- Card 3: Floating Dial / Compass -->
+    <g transform="translate(600, 350)">
+      <rect width="220" height="130" rx="12" fill="#203f3a" stroke="#2f5c54" stroke-width="1"/>
+      <circle cx="70" cy="65" r="36" stroke="#2f5c54" stroke-width="2"/>
+      <circle cx="70" cy="65" r="28" stroke="#0b6e69" stroke-width="5" stroke-dasharray="110 50"/>
+      <rect x="125" y="40" width="70" height="12" rx="3" fill="#5a7d76"/>
+      <rect x="125" y="60" width="80" height="20" rx="4" fill="#f7f4ed"/>
+    </g>
+
+    <!-- Bottom Focal Badge -->
+    <g transform="translate(180, 770)">
+      <rect width="640" height="140" rx="12" fill="url(#glow)"/>
+      <rect x="2" y="2" width="636" height="136" rx="10" fill="#132724" fill-opacity="0.85"/>
+      <circle cx="50" cy="70" r="24" fill="#0b6e69"/>
+      <path d="M42 70 L48 76 L58 64" stroke="#f7f4ed" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="95" y="48" width="240" height="16" rx="4" fill="#f7f4ed"/>
+      <rect x="95" y="74" width="380" height="12" rx="3" fill="#698e87"/>
+    </g>
+  </g>
+</svg>

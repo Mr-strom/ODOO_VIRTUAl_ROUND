@@ -8,7 +8,7 @@ from ..auth_utils import jwt_required
 dashboard_bp = Blueprint('dashboard', __name__)
 
 
-@dashboard_bp.route('', methods=['GET'])
+@dashboard_bp.route('/dashboard', methods=['GET'])
 @jwt_required
 def dashboard():
     """GET /api/dashboard — Role-based summary for employee or HR."""
@@ -30,9 +30,9 @@ def dashboard():
 
         return jsonify({
             'role': 'employee',
-            'today_attendance': today_att.to_dict() if today_att else None,
+            'today_attendance': today_att.to_dict() if today_att else {'status': 'absent', 'check_in': None, 'check_out': None},
             'pending_leaves': pending_leaves,
-            'profile_completeness': f'{completeness}%'
+            'profile_completeness': completeness
         }), 200
 
     else:  # hr
@@ -42,20 +42,17 @@ def dashboard():
         # Pending leave requests across all employees
         pending_leaves = LeaveRequest.query.filter_by(status='pending').count()
 
-        # Today's attendance summary
-        present = Attendance.query.filter_by(date=today, status='present').count()
-        absent = Attendance.query.filter_by(date=today, status='absent').count()
-        half_day = Attendance.query.filter_by(date=today, status='half-day').count()
-        on_leave = Attendance.query.filter_by(date=today, status='leave').count()
+        # Today's attendance summary — flat fields for JS
+        today_records = Attendance.query.filter_by(date=today).all()
+        present = sum(1 for r in today_records if r.status in ('present', 'half-day'))
+        absent = sum(1 for r in today_records if r.status == 'absent')
+        on_leave = sum(1 for r in today_records if r.status == 'leave')
 
         return jsonify({
             'role': 'hr',
             'total_employees': total_employees,
             'pending_leave_requests': pending_leaves,
-            'today_attendance_summary': {
-                'present': present,
-                'absent': absent,
-                'half_day': half_day,
-                'on_leave': on_leave
-            }
+            'today_present': present,
+            'today_absent': absent,
+            'today_on_leave': on_leave
         }), 200

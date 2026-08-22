@@ -1,58 +1,60 @@
 # routes/attendance.py — Check-in, check-out, own records, HR all records
 from flask import Blueprint, request, jsonify, g
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, time
 from .. import db
 from ..models import Attendance, User
 from ..auth_utils import jwt_required, hr_required
 
 attendance_bp = Blueprint('attendance', __name__)
 
-VALID_STATUSES = {'present', 'absent', 'half-day', 'leave'}
-
 
 @attendance_bp.route('/checkin', methods=['POST'])
 @jwt_required
 def checkin():
-    """POST /api/attendance/checkin — Create or update today's check-in for employee."""
+    """POST /api/attendance/checkin — Record check-in for today."""
     user = g.current_user
-    if user.role != 'employee':
-        return jsonify({'error': 'Forbidden'}), 403
-
     today = date.today()
-    now_time = datetime.utcnow().time()
+    now_time = datetime.now().time()
 
-    record = Attendance.query.filter_by(user_id=user.id, date=today).first()
-    if record:
-        # Update existing record's check_in
-        record.check_in = now_time
-    else:
-        # Create new record with default status 'present'
-        record = Attendance(
-            user_id=user.id,
-            date=today,
-            check_in=now_time,
-            status='present'
-        )
-        db.session.add(record)
+    existing = Attendance.query.filter_by(user_id=user.id, date=today).first()
+    if existing and existing.check_in:
+        return jsonify({'error': 'Already checked in today'}), 409
 
+    # Auto-set status to half-day if after 10:00 AM
+    status = 'half-day' if now_time > time(10, 0) else 'present'
+
+    if existing:
+        existing.check_in = now_time
+        existing.status = status
+        db.session.commit()
+        return jsonify(existing.to_dict()), 201
+
+    record = Attendance(
+        user_id=user.id,
+        date=today,
+        check_in=now_time,
+        status=status
+    )
+    db.session.add(record)
     db.session.commit()
-    return jsonify(record.to_dict()), 200
+    return jsonify(record.to_dict()), 201
 
 
 @attendance_bp.route('/checkout', methods=['POST'])
 @jwt_required
 def checkout():
-    """POST /api/attendance/checkout — Update check_out for today's record."""
+    """POST /api/attendance/checkout — Record check-out for today."""
     user = g.current_user
-    if user.role != 'employee':
-        return jsonify({'error': 'Forbidden'}), 403
-
     today = date.today()
+
     record = Attendance.query.filter_by(user_id=user.id, date=today).first()
-    if not record:
+    if not record or not record.check_in:
         return jsonify({'error': 'No check-in found for today'}), 404
 
-    record.check_out = datetime.utcnow().time()
+    if record.check_out:
+        return jsonify({'error': 'Already checked out today'}), 409
+
+    record.check_out = datetime.now().time()
     db.session.commit()
     return jsonify(record.to_dict()), 200
 
@@ -64,9 +66,6 @@ def my_attendance():
     Defaults to last 7 days. Query params: start_date, end_date (YYYY-MM-DD).
     """
     user = g.current_user
-    if user.role != 'employee':
-        return jsonify({'error': 'Forbidden'}), 403
-
     today = date.today()
     start_str = request.args.get('start_date')
     end_str = request.args.get('end_date')
@@ -83,7 +82,7 @@ def my_attendance():
         Attendance.date <= end
     ).order_by(Attendance.date.desc()).all()
 
-    return jsonify([r.to_dict() for r in records]), 200
+    return jsonify({'attendance': [r.to_dict() for r in records]}), 200
 
 
 @attendance_bp.route('/all', methods=['GET'])
@@ -106,4 +105,16 @@ def all_attendance():
         query = query.filter_by(user_id=user_id)
 
     records = query.order_by(Attendance.date.desc()).all()
-    return jsonify([r.to_dict() for r in records]), 200
+
+    result = []
+    for r in records:
+        data = r.to_dict()
+        user = User.query.get(r.user_id)
+        data['user'] = {
+            'id': user.id,
+            'employee_id': user.employee_id,
+            'email': user.email
+        } if user else None
+        result.append(data)
+
+    return jsonify({'attendance': result}), 200

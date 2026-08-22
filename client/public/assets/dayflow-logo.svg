@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="100%" height="100%" fill="none">
+  <rect width="120" height="120" rx="28" fill="#0b6e69"/>
+  <rect x="18" y="18" width="84" height="84" rx="18" fill="#075854" fill-opacity="0.5"/>
+  <!-- Circular calendar / clock gear -->
+  <circle cx="60" cy="60" r="32" stroke="#f7f4ed" stroke-width="4" stroke-dasharray="6 4"/>
+  <!-- Ember Sun / Day marker -->
+  <circle cx="44" cy="48" r="14" fill="#e76f51"/>
+  <!-- Flow lines -->
+  <path d="M44 68 C 52 68, 60 76, 76 76" stroke="#f7f4ed" stroke-width="5" stroke-linecap="round"/>
+  <path d="M52 56 C 60 56, 68 64, 80 64" stroke="#dce7d6" stroke-width="4" stroke-linecap="round"/>
+</svg>

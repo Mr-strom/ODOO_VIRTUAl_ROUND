@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 280" width="100%" height="100%" fill="none">
+  <defs>
+    <linearGradient id="pflow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b6e69"/>
+      <stop offset="60%" stop-color="#247b76"/>
+      <stop offset="100%" stop-color="#e76f51"/>
+    </linearGradient>
+    <pattern id="pdots" width="16" height="16" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1" fill="#0b6e69" fill-opacity="0.15"/>
+    </pattern>
+  </defs>
+
+  <rect width="400" height="280" fill="#edf3ee"/>
+  <rect width="400" height="280" fill="url(#pdots)"/>
+
+  <!-- Flowing ribbons -->
+  <path d="M-20 180 C 80 120, 140 220, 240 160 C 320 100, 360 140, 420 80" stroke="url(#pflow)" stroke-width="24" stroke-linecap="round" fill="none" opacity="0.85"/>
+  <path d="M-20 220 C 70 170, 150 250, 260 190 C 340 140, 370 170, 420 120" stroke="#f2c173" stroke-width="12" stroke-linecap="round" fill="none" opacity="0.75"/>
+  <path d="M-20 140 C 90 90, 160 170, 250 120 C 330 80, 380 110, 420 60" stroke="#075854" stroke-width="6" stroke-linecap="round" fill="none" opacity="0.6"/>
+
+  <!-- People node badges -->
+  <circle cx="90" cy="145" r="20" fill="#ffffff" filter="drop-shadow(0 4px 10px rgba(11,110,105,0.15))"/>
+  <circle cx="90" cy="145" r="14" fill="#0b6e69"/>
+  <path d="M84 149 C 84 143, 96 143, 96 149" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="90" cy="140" r="3.5" fill="#ffffff"/>
+
+  <circle cx="240" cy="160" r="24" fill="#ffffff" filter="drop-shadow(0 6px 14px rgba(231,111,81,0.2))"/>
+  <circle cx="240" cy="160" r="17" fill="#e76f51"/>
+  <path d="M233 165 C 233 158, 247 158, 247 165" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="240" cy="154" r="4.5" fill="#ffffff"/>
+
+  <circle cx="340" cy="100" r="18" fill="#ffffff" filter="drop-shadow(0 4px 10px rgba(11,110,105,0.15))"/>
+  <circle cx="340" cy="100" r="12" fill="#075854"/>
+  <path d="M335 103 C 335 98, 345 98, 345 103" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
+  <circle cx="340" cy="96" r="3" fill="#ffffff"/>
+</svg>

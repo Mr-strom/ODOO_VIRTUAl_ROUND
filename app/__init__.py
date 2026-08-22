@@ -1,5 +1,6 @@
-# app/__init__.py — Flask application factory
-from flask import Flask, jsonify
+# app/__init__.py - Flask application factory
+import os
+from flask import Flask, jsonify, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_cors import CORS
@@ -9,7 +10,9 @@ migrate = Migrate()
 
 
 def create_app():
-    app = Flask(__name__)
+    # Serve built React from dist/public/
+    static_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'dist', 'public')
+    app = Flask(__name__, static_folder=static_dir, static_url_path='')
 
     # Load config
     from .config import Config
@@ -43,30 +46,24 @@ def create_app():
     app.register_blueprint(payroll_bp, url_prefix='/api/payroll')
     app.register_blueprint(analytics_bp, url_prefix='/api/analytics')
 
-    # API Root metadata endpoint (pure REST API)
-    @app.route('/')
-    def index():
-        return jsonify({
-            'name': 'Dayflow HRMS REST API',
-            'version': '1.0.0',
-            'status': 'healthy',
-            'endpoints': {
-                'health': '/api/health',
-                'auth': '/api/auth',
-                'dashboard': '/api/dashboard',
-                'profile': '/api/profile',
-                'attendance': '/api/attendance',
-                'leaves': '/api/leaves',
-                'payroll': '/api/payroll',
-                'analytics': '/api/analytics'
-            },
-            'architecture': 'Decoupled API (React static SPA frontend)'
-        }), 200
-
-    # Health check
+    # Health check - registered before catch-all
     @app.route('/api/health')
     def health():
         return jsonify({'status': 'ok', 'message': 'Dayflow API is running'}), 200
+
+    # Catch-all: serve built React SPA for all non-API routes
+    # MUST come after all blueprint registrations
+    @app.route('/', defaults={'path': ''})
+    @app.route('/<path:path>')
+    def serve_react(path):
+        # /api/* paths not matched by blueprints -> 404 JSON
+        if path.startswith('api/'):
+            return jsonify({'error': 'Not found'}), 404
+        # Serve static assets (JS/CSS/images) if file exists in dist/public
+        if path and os.path.exists(os.path.join(app.static_folder, path)):
+            return send_from_directory(app.static_folder, path)
+        # All other paths -> index.html (React Router handles client routing)
+        return send_from_directory(app.static_folder, 'index.html')
 
     # Global JSON error handlers
     @app.errorhandler(404)

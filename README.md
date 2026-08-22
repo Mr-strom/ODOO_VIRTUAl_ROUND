@@ -78,9 +78,9 @@ Odoo/
 
 | # | Name |
 |---|------|
-| 1 | Member 1 |
-| 2 | Member 2 |
-| 3 | Member 3 |
+| 1 | Bhumesh  |
+| 2 | Rishik |
+| 3 | Adithya|
 
 Built for the 8-Hour Hackathon Qualifier Round.
 

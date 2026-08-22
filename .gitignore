@@ -45,11 +45,9 @@ pids
 *.seed
 *.pid.lock
 
-# Coverage directory used by tools like istanbul
+# Coverage
 coverage/
 *.lcov
-
-# nyc test coverage
 .nyc_output
 
 # Dependency directories
@@ -79,20 +77,20 @@ jspm_packages/
 # Yarn Integrity file
 .yarn-integrity
 
-# parcel-bundler cache (https://parceljs.org/)
+# Parcel
 .cache
 .parcel-cache
 
-# Next.js build output
+# Next.js
 .next
 
-# Nuxt.js build / generate output
+# Nuxt
 .nuxt
 
-# Gatsby files
+# Gatsby
 .cache/
 
-# Storybook build outputs
+# Storybook
 .out
 .storybook-out
 
@@ -105,9 +103,16 @@ temp/
 *.sqlite
 *.sqlite3
 
-# Webdev artifacts (checkpoint zips, migrations, etc.)
+# Webdev artifacts
 .webdev/
 
-# Manus version file (auto-generated, not part of source)
+# Manus version file
 client/public/__manus__/version.json
 .project-config.json
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo

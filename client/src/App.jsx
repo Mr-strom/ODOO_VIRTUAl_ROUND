@@ -690,6 +690,16 @@ function AuthScreen({ mode, setMode, onSignIn, onSignUp }) {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const isSignIn = mode === "signin";
+  const [activeTab, setActiveTab] = useState("employee");
+
+  useEffect(() => {
+    if (!isSignIn) return;
+    if (activeTab === "hr") {
+      setForm((f) => ({ ...f, email: "hr@dayflow.com", password: "hrpass123" }));
+    } else {
+      setForm((f) => ({ ...f, email: "emp1@dayflow.com", password: "emppass123" }));
+    }
+  }, [activeTab, isSignIn]);
   const rules = {
     length: form.password.length >= 8,
     number: /\d/.test(form.password),
@@ -1141,5 +1151,6 @@ function SalaryBreakdown({ salary, highlighted = false }) { const net = Number(s
 function Toast({ message, tone, onClose }) { const Icon = tone === "success" ? CheckCircle2 : tone === "warning" ? AlertCircle : Bell; return <div className={`toast toast--${tone}`}><Icon size={18} /><span>{message}</span><button onClick={onClose} aria-label="Dismiss notification"><X size={16} /></button></div>; }
 
 export default App;
+
 
 

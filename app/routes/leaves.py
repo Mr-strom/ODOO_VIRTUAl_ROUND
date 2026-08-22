@@ -2,7 +2,7 @@
 from flask import Blueprint, request, jsonify, g
 from datetime import datetime
 from .. import db
-from ..models import LeaveRequest
+from ..models import LeaveRequest, User, Notification
 from ..auth_utils import jwt_required, hr_required
 
 leaves_bp = Blueprint('leaves', __name__)
@@ -54,6 +54,20 @@ def apply_leave():
         status='pending'
     )
     db.session.add(leave)
+    db.session.flush()  # get leave.id before notifying
+
+    # Notify all HR users about the new leave request
+    emp_name = (user.profile.full_name if user.profile and user.profile.full_name
+                else user.employee_id)
+    hr_users = User.query.filter_by(role='hr').all()
+    for hr in hr_users:
+        db.session.add(Notification(
+            user_id=hr.id,
+            notif_type='leave_request',
+            message=f'{emp_name} applied for {leave_type} leave',
+            related_id=leave.id
+        ))
+
     db.session.commit()
     return jsonify(leave.to_dict()), 201
 
@@ -100,6 +114,14 @@ def update_leave_status(leave_id):
     leave.admin_comment = admin_comment
     leave.approved_by = g.current_user.id   # Track which HR acted on it
     leave.updated_at = datetime.utcnow()
-    db.session.commit()
 
+    # Notify the employee whose leave was acted on
+    db.session.add(Notification(
+        user_id=leave.user_id,
+        notif_type='leave_status',
+        message=f'Your leave request was {new_status}',
+        related_id=leave.id
+    ))
+
+    db.session.commit()
     return jsonify(leave.to_dict()), 200

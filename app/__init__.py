@@ -31,6 +31,7 @@ def create_app():
     from .routes.leaves import leaves_bp
     from .routes.payroll import payroll_bp
     from .routes.analytics import analytics_bp
+    from .routes.notifications import notifications_bp
 
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
     app.register_blueprint(dashboard_bp, url_prefix='/api/dashboard')
@@ -39,6 +40,7 @@ def create_app():
     app.register_blueprint(leaves_bp, url_prefix='/api/leaves')
     app.register_blueprint(payroll_bp, url_prefix='/api/payroll')
     app.register_blueprint(analytics_bp, url_prefix='/api/analytics')
+    app.register_blueprint(notifications_bp, url_prefix='/api/notifications')
 
     # Global JSON error handlers
     @app.errorhandler(404)

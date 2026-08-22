@@ -23,7 +23,7 @@ def create_app():
     # Import models so Flask-Migrate picks them up
     from . import models  # noqa
 
-    # Register blueprints
+    # register all route blueprints
     from .routes.auth import auth_bp
     from .routes.dashboard import dashboard_bp
     from .routes.profile import profile_bp
@@ -52,3 +52,4 @@ def create_app():
         return jsonify({'error': 'Internal server error'}), 500
 
     return app
+

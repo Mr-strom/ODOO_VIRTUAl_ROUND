@@ -1,4 +1,4 @@
-# config.py — App configuration loaded from .env
+# config.py â€” App configuration loaded from .env
 import os
 from dotenv import load_dotenv
 
@@ -23,6 +23,10 @@ class Config:
 
     SECRET_KEY = _secret
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'sqlite:///dayflow.db')
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        'pool_pre_ping': True,
+        'pool_recycle': 300,
+    }
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     JWT_EXPIRY_HOURS = int(os.getenv('JWT_EXPIRY_HOURS', '24'))
 

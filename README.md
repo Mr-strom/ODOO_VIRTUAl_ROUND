@@ -3,6 +3,13 @@
 A decoupled full-stack HRMS built with a React frontend and Flask REST API for the Odoo Hackathon.
 
 ---
+# Dayflow — HR Management System
+
+A decoupled full-stack HRMS built with a React frontend and Flask REST API for the Odoo Hackathon.
+
+🚀 **Live Demo:** https://dayflow-hrms-3vyh.onrender.com/
+
+---
 
 ## System Architecture
 

@@ -107,3 +107,51 @@ def all_attendance():
 
     records = query.order_by(Attendance.date.desc()).all()
     return jsonify([r.to_dict() for r in records]), 200
+
+
+@attendance_bp.route('/export', methods=['GET'])
+@hr_required
+def export_attendance():
+    """GET /api/attendance/export?start_date=YYYY-MM-DD&end_date=YYYY-MM-DD
+    HR only — returns CSV of attendance records in the given date range.
+    """
+    import csv
+    import io
+    from flask import Response
+
+    today = date.today()
+    start_str = request.args.get('start_date')
+    end_str = request.args.get('end_date')
+
+    try:
+        start = datetime.strptime(start_str, '%Y-%m-%d').date() if start_str else today - timedelta(days=30)
+        end = datetime.strptime(end_str, '%Y-%m-%d').date() if end_str else today
+    except ValueError:
+        return jsonify({'error': 'Dates must be YYYY-MM-DD'}), 400
+
+    records = (
+        Attendance.query
+        .filter(Attendance.date >= start, Attendance.date <= end)
+        .order_by(Attendance.date.desc(), Attendance.user_id)
+        .all()
+    )
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(['Employee ID', 'Name', 'Date', 'Check In', 'Check Out', 'Status'])
+
+    for rec in records:
+        user = User.query.get(rec.user_id)
+        emp_id = user.employee_id if user else ''
+        name = (user.profile.full_name if user and user.profile and user.profile.full_name else '')
+        check_in = rec.check_in.strftime('%H:%M:%S') if rec.check_in else ''
+        check_out = rec.check_out.strftime('%H:%M:%S') if rec.check_out else ''
+        writer.writerow([emp_id, name, rec.date.isoformat(), check_in, check_out, rec.status])
+
+    output.seek(0)
+    filename = f'attendance_{start.isoformat()}_{end.isoformat()}.csv'
+    return Response(
+        output,
+        mimetype='text/csv',
+        headers={'Content-Disposition': f'attachment; filename={filename}'}
+    )

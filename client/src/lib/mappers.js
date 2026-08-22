@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Dayflow Field Mappers
  * Converts between Flask API field names and the frontend's UI data model.
  *
@@ -65,7 +65,7 @@ export function mapApiToPerson(apiUser, apiProfile, apiPayroll) {
     joinedRaw: profile.joining_date || "",
     manager: "—",
     avatar: initials(profile.full_name),
-    avatarImage: profile.profile_picture || "",
+    avatarImage: profile.profile_picture || `https://api.dicebear.com/9.x/avataaars/svg?seed=${user.employee_id || user.id}`,
     documents: profile.documents ? profile.documents.split(",").map((d) => d.trim()).filter(Boolean) : [],
     salary: {
       basic: Number(payroll.basic_salary || 0),
@@ -188,3 +188,4 @@ function daysBetween(start, end) {
 }
 
 export { formatDate, capitalize, initials, trimTime };
+

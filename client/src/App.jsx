@@ -1,4 +1,4 @@
-/* Dayflow Editorial Workbench: warm editorial operations console, teal actions, ember attention, calm asymmetric workspace. */
+﻿/* Dayflow Editorial Workbench: warm editorial operations console, teal actions, ember attention, calm asymmetric workspace. */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   AlertCircle,
@@ -735,6 +735,31 @@ function AuthScreen({ mode, setMode, onSignIn, onSignUp }) {
           <h1>{isSignIn ? "The workday, better organised." : "Make the people work visible."}</h1>
           <p>{isSignIn ? "Sign in to keep attendance, requests, and the day’s essentials moving." : "Create an account to access the Dayflow people operations workspace."}</p>
         </div>
+        {isSignIn && (
+          <div style={{ display: "flex", gap: 0, marginBottom: 16, borderBottom: "1px solid var(--rule)" }}>
+            {[["employee","Employee Login"],["hr","HR Login"]].map(([tab, label]) => (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => setActiveTab(tab)}
+                style={{
+                  flex: 1,
+                  padding: "9px 0",
+                  background: "none",
+                  border: "none",
+                  borderBottom: activeTab === tab ? "2px solid #0b6e69" : "2px solid transparent",
+                  color: activeTab === tab ? "#0b6e69" : "#9ca3af",
+                  fontWeight: activeTab === tab ? 700 : 400,
+                  opacity: activeTab === tab ? 1 : 0.5,
+                  fontSize: 13,
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                  letterSpacing: "0.01em",
+                }}
+              >{label}</button>
+            ))}
+          </div>
+        )}
         <form className="auth-form" onSubmit={submit} noValidate>
           <div className="auth-form__caption"><span>Access details</span><i /></div>
           {!isSignIn && (
@@ -1106,7 +1131,7 @@ function AnalyticsView({ notify }) {
 function QuickAction({ icon: Icon, label, value, tone, onClick }) { return <button className={`quick-action quick-action--${tone}`} onClick={onClick}><div className="quick-icon"><Icon size={21} /></div><div><span>{label}</span><strong>{value}</strong></div><ArrowUpRight size={17} /></button>; }
 function Metric({ label, value, detail, icon: Icon, tone }) { return <article className={`metric metric--${tone}`}><div className="metric-icon"><Icon size={19} /></div><span>{label}</span><strong>{value}</strong><small>{detail}</small></article>; }
 function ActivityLine({ icon: Icon, title, detail, tone }) { return <div className="activity-line"><div className={`activity-icon activity-icon--${tone}`}><Icon size={16} /></div><div><strong>{title}</strong><span>{detail}</span></div></div>; }
-function Avatar({ person, size = "small" }) { return <span className={`avatar avatar--${size}`}>{person?.avatarImage ? <img src={person.avatarImage} alt="" onError={(e) => { e.target.style.display = 'none'; }} /> : person?.avatar || "DF"}</span>; }
+function Avatar({ person, size = "small" }) { return <span className={`avatar avatar--${size}`}>{person?.avatarImage ? <img src={person.avatarImage} alt="" style={{width:"100%",height:"100%",objectFit:"cover",borderRadius:"50%"}} onError={(e) => { e.target.style.display = "none"; }} /> : person?.avatar || "DF"}</span>; }
 function StatusPill({ status }) { return <span className={`status-pill status-pill--${(status || "").toLowerCase().replace(/[^a-z]/g, "-")}`}>{status}</span>; }
 function StatusLegend({ status }) { return <span className="legend-item"><i className={`legend-dot legend-dot--${status.toLowerCase().replace(/[^a-z]/g, "-")}`} />{status}</span>; }
 function Rule({ ok, text }) { return <span className={classNames("rule", ok && "rule--ok")}>{ok ? <Check size={13} /> : <i />}{text}</span>; }
@@ -1116,3 +1141,5 @@ function SalaryBreakdown({ salary, highlighted = false }) { const net = Number(s
 function Toast({ message, tone, onClose }) { const Icon = tone === "success" ? CheckCircle2 : tone === "warning" ? AlertCircle : Bell; return <div className={`toast toast--${tone}`}><Icon size={18} /><span>{message}</span><button onClick={onClose} aria-label="Dismiss notification"><X size={16} /></button></div>; }
 
 export default App;
+
+

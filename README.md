@@ -2,11 +2,6 @@
 
 A decoupled full-stack HRMS built with a React frontend and Flask REST API for the Odoo Hackathon.
 
----
-# Dayflow — HR Management System
-
-A decoupled full-stack HRMS built with a React frontend and Flask REST API for the Odoo Hackathon.
-
 🚀 **Live Demo:** https://dayflow-hrms-3vyh.onrender.com/
 
 ---
@@ -42,12 +37,28 @@ Dayflow utilizes a modern decoupled two-service architecture:
 
 ---
 
+## Demo Credentials
+
+| Role | Email | Password |
+|------|-------|----------|
+| HR | `hr@dayflow.com` | `hrpass123` |
+| Employee | `emp1@dayflow.com` | `emppass123` |
+| Employee | `emp2@dayflow.com` | `emppass123` |
+| Employee | `emp3@dayflow.com` | `emppass123` |
+| Employee | `emp4@dayflow.com` | `emppass123` |
+| Employee | `emp5@dayflow.com` | `emppass123` |
+| Employee | `emp6@dayflow.com` | `emppass123` |
+| Employee | `emp7@dayflow.com` | `emppass123` |
+| Employee | `emp8@dayflow.com` | `emppass123` |
+
+---
+
 ## Tech Stack
 
 | Layer | Technology |
 |---|---|
 | **Frontend** | React 19, Vite 7, Lucide React, Space Grotesk typography |
-| **Backend** | Python 3.13, Flask 3, Flask-SQLAlchemy, Flask-CORS |
+| **Backend** | Python 3.11, Flask 3, Flask-SQLAlchemy, Flask-CORS |
 | **WSGI Server** | Gunicorn (Production) |
 | **Database** | PostgreSQL (Production) / SQLite (Development) |
 | **Auth** | PyJWT (HS256 with timestamp validation), Werkzeug Security |
@@ -58,7 +69,7 @@ Dayflow utilizes a modern decoupled two-service architecture:
 
 ### 1. Prerequisites
 - Python 3.10+
-- Node.js 18+ and pnpm (or npx pnpm)
+- Node.js 18+ and npm
 
 ### 2. Backend Setup
 
@@ -82,17 +93,13 @@ python run.py
 
 ```bash
 # In a separate terminal
-cd Odoo
+cd Odoo/client
 
 # Install frontend dependencies
-npx pnpm install
+npm install --legacy-peer-deps
 
-# Run type check and production build
-npx pnpm check
-npx pnpm build
-
-# Start local development server (listens on port 3000, proxies /api -> :5000)
-npx pnpm dev
+# Run local development server (listens on port 3000, proxies /api -> :5000)
+npm run dev
 ```
 
 Open `http://localhost:3000` to interact with the Dayflow workspace.
@@ -111,24 +118,34 @@ python create_admin.py --emp-id HR001 --email hr@company.com --password YourSecu
 
 ## Production Deployment
 
-Flask is deployed as a **Render Web Service** using Gunicorn; React is deployed separately as a **Render Static Site** using build command `pnpm install --frozen-lockfile && pnpm build` and publish directory `dist/public`.
+The application is deployed as a **unified Render Web Service**: Flask serves the React production build as static files from `dist/public`, while API routes are mounted under `/api`.
 
-### Backend: Flask API (Render Web Service)
+### Render Web Service Configuration
 * **Environment**: Python 3
-* **Build Command**: `pip install -r requirements.txt`
-* **Start Command**: `gunicorn --bind 0.0.0.0:$PORT 'app:create_app()'`
+* **Build Command**: `pip install -r requirements.txt && cd client && npm install --legacy-peer-deps && npm run build && cd ..`
+* **Start Command**: `gunicorn run:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120`
 * **Environment Variables**:
   * `FLASK_ENV`: `production`
   * `SECRET_KEY`: Random 32+ character string (e.g. generated via `openssl rand -hex 32`) *(Required: server will fail to start if missing)*
-  * `DATABASE_URL`: PostgreSQL connection string (`postgresql://user:pass@host:5432/dayflow`)
+  * `DATABASE_URL`: PostgreSQL connection string with `sslmode=require` (e.g. `postgresql://user:pass@host:5432/dayflow?sslmode=require`)
   * `JWT_EXPIRY_HOURS`: `24`
-  * `CORS_ORIGINS`: Deployed frontend domain (e.g. `https://dayflow-hrms.onrender.com`)
+  * `CORS_ORIGINS`: Deployed frontend domain (e.g. `https://dayflow-hrms-3vyh.onrender.com`)
 
-### Frontend: React SPA (Render Static Site)
-* **Build Command**: `pnpm install --frozen-lockfile && pnpm build`
-* **Publish Directory**: `dist/public`
-* **Environment Variable**:
-  * `VITE_API_BASE_URL`: Full URL of the deployed Flask Web Service ending in `/api` (e.g. `https://dayflow-api.onrender.com/api`)
+### Database Seeding (Production)
+
+To populate the production PostgreSQL database with demo users, profiles, attendance, leave requests, and payroll records:
+
+```bash
+# Option 1: Run from Render Shell (recommended)
+# Go to Render Dashboard → dayflow-hrms → Shell → run:
+python seed_data.py
+
+# Option 2: Run locally with production DATABASE_URL
+$env:DATABASE_URL = "postgresql://user:pass@host:5432/dbname?sslmode=require"
+python seed_data.py
+```
+
+Use `--clear` only if you want to wipe existing data first.
 
 ---
 

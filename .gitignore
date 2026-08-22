@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Dependencies
 **/node_modules
 .pnpm-store/
@@ -111,3 +112,32 @@ temp/
 # Manus version file (auto-generated, not part of source)
 client/public/__manus__/version.json
 .project-config.json
+=======
+# Virtual environment
+venv/
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Database
+*.db
+
+# Environment variables
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+>>>>>>> dd399fb768eda06082bc700cfd782ac617a9f97c
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo

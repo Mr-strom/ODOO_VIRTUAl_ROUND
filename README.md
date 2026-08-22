@@ -1,91 +1,107 @@
-# Dayflow - Human Resource Management System
+# Dayflow HRMS — Backend
 
-A full-stack HRMS built for the 8-hour hackathon qualifier. Digitizes core HR operations: employee onboarding, profile management, attendance tracking, leave management, and payroll visibility.
-
-> This is the **main branch** — just the project skeleton. All features are being built on separate branches.
-
----
+Flask + PostgreSQL REST API for the Dayflow Human Resource Management System.
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|------------|
-| Backend | Python, Flask, SQLAlchemy |
-| Database | SQLite (dev) |
-| Auth | JWT (PyJWT) |
-| Password Hashing | Werkzeug |
-| API Style | REST JSON |
+- **Flask** (Python web framework)
+- **PostgreSQL** (database)
+- **SQLAlchemy** (ORM)
+- **Flask-Migrate** (Alembic migrations)
+- **PyJWT** (auth tokens)
+- **flask-cors** (cross-origin requests)
 
----
+## Setup
 
-## Setup & Run
+### 1. Clone and enter the project
 
-### Prerequisites
-- Python 3.10+
-- `pip`
-
-### 1. Clone & Enter
 ```bash
-git clone <your-repo-url>
-cd Odoo
+git clone <repo-url>
+cd dayflow-backend
 ```
 
-### 2. Create Virtual Environment
+### 2. Create virtual environment
+
 ```bash
 python -m venv venv
-source venv/bin/activate  # Linux/Mac
-venv\Scripts\activate     # Windows
+# Windows
+venv\Scripts\activate
+# Mac/Linux
+source venv/bin/activate
 ```
 
-### 3. Install Dependencies
+### 3. Install dependencies
+
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Run the Server
+### 4. Configure environment
+
+Copy `.env.example` to `.env` and update with your PostgreSQL credentials:
+
 ```bash
-python app.py
+cp .env.example .env
+```
+
+```
+FLASK_APP=run.py
+FLASK_ENV=development
+SECRET_KEY=your-secret-key-here
+DATABASE_URL=postgresql://postgres:YOUR_PASSWORD@localhost:5432/dayflow
+```
+
+### 5. Create the database
+
+```bash
+createdb dayflow
+# or via psql:
+psql -U postgres -c "CREATE DATABASE dayflow;"
+```
+
+### 6. Run migrations
+
+```bash
+flask db init
+flask db migrate -m "initial schema"
+flask db upgrade
+```
+
+### 7. Run the server
+
+```bash
+flask run
 ```
 
 Server starts at `http://127.0.0.1:5000`
 
-Hit `/api/health` to check if everything's working.
+## API Overview
 
----
+| Module     | Base Path         | Access          |
+|------------|-------------------|-----------------|
+| Auth       | /api/auth         | Public + JWT    |
+| Dashboard  | /api/dashboard    | JWT             |
+| Profile    | /api/profile      | JWT             |
+| Attendance | /api/attendance   | JWT             |
+| Leaves     | /api/leaves       | JWT             |
+| Payroll    | /api/payroll      | JWT             |
 
-## Project Structure
+## Roles
 
+- `employee` — can view own data, check in/out, apply for leave
+- `hr` — can manage all employees, approve leaves, set payroll
+
+## Auth
+
+All protected routes require:
 ```
-Odoo/
-├── app.py
-├── requirements.txt
-├── .gitignore
-├── README.md
-├── routes/
-│   └── __init__.py
-├── templates/
-│   └── index.html
-└── static/
-    ├── css/
-    │   └── style.css
-    └── js/
-        └── app.js
+Authorization: Bearer <token>
 ```
 
----
+Token is returned on signup and login.
 
-## Team
+## Notes
 
-| # | Name |
-|---|------|
-| 1 | Bhumesh  |
-| 2 | Rishik |
-| 3 | Adithya|
-
-Built for the 8-Hour Hackathon Qualifier Round.
-
----
-
-## License
-
-Internal / Hackathon Submission
+- `net_salary` is computed (basic_salary + hra - deductions), not stored in DB
+- Password hashing uses werkzeug.security
+- No email verification logic — `is_verified` is a plain boolean field

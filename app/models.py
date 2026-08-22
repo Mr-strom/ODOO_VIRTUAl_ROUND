@@ -135,3 +135,27 @@ class Payroll(db.Model):
             'net_salary': round(net_salary, 2),
             'updated_at': self.updated_at.isoformat() if self.updated_at else None
         }
+
+
+class Notification(db.Model):
+    __tablename__ = 'notifications'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    # 'type' is a reserved SQLAlchemy polymorphism keyword — mapped explicitly via column()
+    notif_type = db.Column('type', db.String(50), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    is_read = db.Column(db.Boolean, default=False)
+    related_id = db.Column(db.Integer)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'type': self.notif_type,
+            'message': self.message,
+            'is_read': self.is_read,
+            'related_id': self.related_id,
+            'created_at': self.created_at.isoformat() if self.created_at else None
+        }

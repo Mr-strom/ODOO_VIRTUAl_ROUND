@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# Environment variables
+.env
+
+# Flask / SQLAlchemy
+instance/
+*.db
+*.sqlite3
+
+# Migrations (keep the folder, ignore auto-generated __pycache__)
+migrations/__pycache__/
+migrations/versions/__pycache__/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Test artifacts
+test_suite.py
+*.coverage
+.pytest_cache/
